@@ -7,12 +7,20 @@ format_date = '%Y-%m-%d'
 name = "Кузнецов Владислав МЕН-320203 3 курс"
 
 # Для стратегий
-short_period = 5
-long_period = 25
-all_period = 170
-stop_loss = 300
-risk = 0.02
-epsilon = 10
-rsi_period = 20
+short_period = 3
+long_period = 46
+rsi_period = 29
+
+min_flet_rsi = 45
+max_flet_rsi = 61
+
 max_rsi = 70
-min_rsi = 50
+min_rsi = 30
+
+rsi_sell = 70
+rsi_buy = 30
+
+
+risk = 0.01
+stop_loss = 269
+upper_stop_loss = 255
