@@ -10,8 +10,8 @@ name = "Кузнецов Владислав МЕН-320203 3 курс"
 short_period = 3
 long_period = 46
 rsi_period = 29
-msa_period = 64
-k = 1
+msa_period = 25
+k = 0.00001
 
 min_flet_rsi = 40
 max_flet_rsi = 60
@@ -20,9 +20,9 @@ max_rsi = 70
 min_rsi = 30
 
 rsi_sell = 70
-rsi_buy = 20
+rsi_buy = 30
 
 
-risk = 0.03
+risk = 0.001
 stop_loss = 269
-upper_stop_loss = 270
+upper_stop_loss = 280

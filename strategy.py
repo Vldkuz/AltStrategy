@@ -15,7 +15,9 @@ class MixedStrategy(Strategy):
         self.e_long_indicator = EMA(period=long_period)
         self._sma = SMA(period=msa_period)
         self.k = k
-        self.last_mcs = []
+        self.last_mcs = [1]
+        self.last_ema_short = []
+        self.last_ema_long = []
 
         self.min_flet_rsi = min_flet_rsi
         self.max_flet_rsi = max_flet_rsi
@@ -49,7 +51,7 @@ class MixedStrategy(Strategy):
 
 
         if not self.in_position():
-            if self.min_flet_rsi < self.r_indicator.rsi[0] < self.max_flet_rsi and lb < price < ub:
+            if self.min_flet_rsi < self.r_indicator.rsi[0] < self.max_flet_rsi and lb <= price <= ub:
                 if self.r_indicator.rsi[0] <= self.min_rsi:
                     self.send_market_order_buy(size = volume)
                     self.position_status = Position.long
@@ -60,11 +62,11 @@ class MixedStrategy(Strategy):
                 return
             else:
 
-                if self.m_indicator.macd[0] > signal and self.last_mcs[-1] > signal and self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
+                if self.m_indicator.macd[0] > signal and self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
                     self.send_market_order_buy(size = volume)
                     self.position_status = Position.long
                     return
-                elif self.m_indicator.macd[0] < signal and self.last_mcs[-1] < signal and self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
+                elif self.m_indicator.macd[0] < signal and self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
                     self.send_market_order_sell(size = volume)
                     self.position_status = Position.short
                 return
@@ -75,7 +77,7 @@ class MixedStrategy(Strategy):
                 self.position_status = Position.none
                 return
 
-            if self.min_flet_rsi < self.r_indicator.rsi[0] < self.max_flet_rsi:
+            if self.min_flet_rsi < self.r_indicator.rsi[0] < self.max_flet_rsi and lb <= price <= ub:
                 if self.r_indicator.rsi[0] >= self.rsi_sell:
                     self.send_market_order_sell()
                     self.position_status = Position.none
@@ -83,7 +85,7 @@ class MixedStrategy(Strategy):
             else:
                 signal = self.m_indicator.ema(self.last_mcs, 0, len(self.last_mcs))
 
-                if self.m_indicator.macd[0] < signal and self.last_mcs[-1] < signal and self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
+                if self.m_indicator.macd[0] < signal and self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
                     self.send_market_order_sell(size = volume)
                     self.position_status = Position.long
                     return
@@ -94,14 +96,14 @@ class MixedStrategy(Strategy):
                 self.position_status = Position.none
                 return
 
-            if self.min_flet_rsi < self.r_indicator.rsi[0] < self.max_flet_rsi and lb < price < ub:
+            if self.min_flet_rsi < self.r_indicator.rsi[0] < self.max_flet_rsi and lb <= price <= ub:
                 if self.r_indicator.rsi[0] >= self.rsi_sell:
                     self.send_market_order_buy(size = volume)
                     self.position_status = Position.none
                     return
 
             else:
-                if self.m_indicator.macd[0] > signal and self.last_mcs[-1] > signal and self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
+                if self.m_indicator.macd[0] > signal and self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
                     self.send_market_order_buy(size = volume)
                     self.position_status = Position.none
                     return
