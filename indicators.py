@@ -69,3 +69,53 @@ class RSI(Indicator):
 
     def is_ready(self) -> bool:
         return len(self.up_diffs) == self.period
+
+
+class EMA(Indicator):
+    lines = ('ema',)
+
+    def __init__(self, period: int):
+        super().__init__()
+        self._data = []
+        self.period = period
+
+    def next(self):
+        price = self.get_price()
+
+        if len(self._data) == self.period:
+            self._data.pop(0)
+
+        self._data.append(price)
+        ema = self._data[0]
+        alpha = 2 / (len(self._data) + 1)
+
+        for price in self._data[1:]:
+            ema = price * alpha + ema * (1 - alpha)
+
+        self.lines.ema[0] = ema
+
+    def is_ready(self) -> bool:
+        return len(self._data) == self.period
+
+class SMA(Indicator):
+    lines = ('sma',)
+
+    def __init__(self, period: int):
+        super().__init__()
+        self._data = []
+        self.period = period
+
+    def next(self):
+        price = self.get_price()
+
+        if len(self._data) == self.period:
+            self._data.pop(0)
+
+        self._data.append(price)
+        self.lines.sma[0] = sum(self._data) / len(self._data)
+
+
+    def is_ready(self) -> bool:
+        return len(self._data) == self.period
+
+
