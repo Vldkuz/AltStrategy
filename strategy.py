@@ -19,6 +19,9 @@ class MixedStrategy(Strategy):
         self.last_ema_short = []
         self.last_ema_long = []
 
+        self.short_in_position = 0
+        self.long_in_position = 0
+
         self.min_flet_rsi = min_flet_rsi
         self.max_flet_rsi = max_flet_rsi
 
@@ -62,11 +65,11 @@ class MixedStrategy(Strategy):
                 return
             else:
 
-                if self.m_indicator.macd[0] > signal and self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
+                if self.m_indicator.macd[0] > signal or self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
                     self.send_market_order_buy(size = volume)
                     self.position_status = Position.long
                     return
-                elif self.m_indicator.macd[0] < signal and self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
+                elif self.m_indicator.macd[0] < signal or self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
                     self.send_market_order_sell(size = volume)
                     self.position_status = Position.short
                 return
@@ -79,20 +82,20 @@ class MixedStrategy(Strategy):
 
             if self.min_flet_rsi < self.r_indicator.rsi[0] < self.max_flet_rsi and lb <= price <= ub:
                 if self.r_indicator.rsi[0] >= self.rsi_sell:
-                    self.send_market_order_sell()
+                    self.send_market_order_sell(size = volume)
                     self.position_status = Position.none
                     return
             else:
                 signal = self.m_indicator.ema(self.last_mcs, 0, len(self.last_mcs))
 
-                if self.m_indicator.macd[0] < signal and self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
+                if self.m_indicator.macd[0] < signal or self.e_short_indicator.ema[0] < self.e_long_indicator.ema[0]:
                     self.send_market_order_sell(size = volume)
                     self.position_status = Position.long
                     return
 
         if self.position_status == Position.short:
             if price > self.upper_stop_loss:
-                self.send_market_order_buy(size = volume)
+                self.send_market_order_buy(size = self.short_in_position)
                 self.position_status = Position.none
                 return
 
@@ -103,13 +106,14 @@ class MixedStrategy(Strategy):
                     return
 
             else:
-                if self.m_indicator.macd[0] > signal and self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
+                if self.m_indicator.macd[0] > signal or self.e_short_indicator.ema[0] > self.e_long_indicator.ema[0]:
                     self.send_market_order_buy(size = volume)
                     self.position_status = Position.none
                     return
 
     def margin_call(self):
-        raise Exception("Потеряли кошелек")
+        self.send_market_order_sell(size = margin_stop)
+        # Здесь продаем 10 акций портфеля, чтобы немного снизить убыток, но все же сидим в позиции
 
 
 
