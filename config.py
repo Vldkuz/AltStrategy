@@ -23,7 +23,7 @@ rsi_sell = 70
 rsi_buy = 30
 
 
-risk = 0.001
+risk = 0.005
 stop_loss = 269
 upper_stop_loss = 280
 

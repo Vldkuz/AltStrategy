@@ -15,12 +15,9 @@ class MixedStrategy(Strategy):
         self.e_long_indicator = EMA(period=long_period)
         self._sma = SMA(period=msa_period)
         self.k = k
-        self.last_mcs = [1]
+        self.last_mcs = []
         self.last_ema_short = []
         self.last_ema_long = []
-
-        self.short_in_position = 0
-        self.long_in_position = 0
 
         self.min_flet_rsi = min_flet_rsi
         self.max_flet_rsi = max_flet_rsi
@@ -95,7 +92,7 @@ class MixedStrategy(Strategy):
 
         if self.position_status == Position.short:
             if price > self.upper_stop_loss:
-                self.send_market_order_buy(size = self.short_in_position)
+                self.send_market_order_buy(size = volume)
                 self.position_status = Position.none
                 return
 
